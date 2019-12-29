@@ -12,8 +12,8 @@ def dict_factory(cursor, row):
     output = {}
     for idx, col in enumerate(cursor.description):
         output[col[0]] = row[idx]
-        return output
-        
+    return output
+
 
 def get_db():
     """New database connection."""
@@ -24,7 +24,7 @@ def get_db():
         # Enable foreign keys per-connection
         flask.g.sqlite_db.execute("PRAGMA foreign_keys = ON")
     return flask.g.sqlite_db
-    
+
 
 @jasondrive.app.teardown_appcontext
 def close_db(error):
@@ -32,4 +32,3 @@ def close_db(error):
     if hasattr(flask.g, 'sqlite_db'):
         flask.g.sqlite_db.commit()
         flask.g.sqlite_db.close()
-

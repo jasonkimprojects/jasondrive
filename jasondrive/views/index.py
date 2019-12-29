@@ -14,11 +14,11 @@ import jasondrive
 @jasondrive.app.route('/', methods=['GET'])
 def show_index():
     """Display / route."""
-    context = {}
     # If user is not logged in, redirect.
     if 'username' not in flask.session:
         return flask.redirect(flask.url_for('show_login'))
-    # Otherwise, TODO
+    # Otherwise, return the template.
+    return flask.render_template('index.html')
 
 
 @jasondrive.app.route('/login/', methods=['GET', 'POST'])
@@ -38,7 +38,7 @@ def show_login():
             return flask.abort(403)
         # Search username in database.
         user_row = db.cursor().execute(
-            """ SELECT * FROM users WHERE username - ? """,
+            """ SELECT * FROM users WHERE username = ? """,
             (username,)).fetchone()
         if not user_row:
             jasondrive.app.logger.debug('Account does not exist!')
