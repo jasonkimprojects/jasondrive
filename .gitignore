@@ -102,3 +102,20 @@ dist
 
 # TernJS port file
 .tern-port
+
+# For jasondrive, specifically. No virtual environment,
+# pycache files or node modules.
+*.db
+var/
+node_modules/
+bundle.js
+tmp
+*.pyc
+__pycache__/
+*.egg-info*
+dist/
+env/
+venv/
+venv3/
+.venv/
+
