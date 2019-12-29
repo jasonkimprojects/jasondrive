@@ -1,0 +1,31 @@
+#!/bin/bash
+
+# jasondrive: script to install toolchain
+# Stop on errors
+set -Eeuo pipefail
+
+# Create Python3 virtual environment
+python3 -m venv env
+
+# Activate the virtual environment
+set +u
+source env/bin/activate
+set -u
+
+# Install nodeenv
+pip install nodeenv
+
+# Install JS virtual environment
+nodeenv --python-virtualenv
+
+# Re-enter Python venv
+set +u
+deactivate
+source env/bin/activate
+set -u
+
+# Install backend
+pip install -e .
+# Install frontend
+npm install .
+

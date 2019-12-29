@@ -1,0 +1,50 @@
+#!/bin/bash
+# Shell script to manage jasondrive database
+
+# Stop on errors
+set -Eeuo pipefail
+
+# Sanity check for args
+usage() {
+  echo "Usage: $0 (create|destroy|reset)"
+}
+
+create() {
+  if [ -f var/jasondrive.sqlite3 ]; then
+    echo "Error: database already exists"
+  else
+    mkdir -p var/uploads
+    sqlite3 var/jasondrive.sqlite3 < sql/schema.sql
+    sqlite3 var/jasondrive.sqlite3 < sql/data.sql
+  fi
+}
+
+destroy() {
+  rm -rf var/jasondrive.sqlite3 var/uploads
+}
+
+# Parse args
+if [ $# -ne 1 ]; then
+  usage
+  exit 1
+fi
+
+case $1 in
+  "create")
+    create
+    ;;
+
+  "destroy")
+    destroy
+    ;;
+
+  "reset")
+    destroy
+    create
+    ;;
+
+  *)
+    usage
+    exit 1
+    ;;
+esac
