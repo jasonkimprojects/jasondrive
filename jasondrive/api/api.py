@@ -12,6 +12,9 @@ from werkzeug.utils import secure_filename
 # TODO: implement API endpoints.
 @jasondrive.app.route('/api/', methods=['GET', 'DELETE', 'PUT'])
 def handle_files():
+    # If not logged in, deny request.
+    if 'username' not in flask.session:
+        return flask.abort(403)
     # Args are decoded automatically, yay!
     FILEPATH = flask.request.args.get('p', default='', type=str)
     BASEPATH = jasondrive.app.config["UPLOAD_FOLDER"]
