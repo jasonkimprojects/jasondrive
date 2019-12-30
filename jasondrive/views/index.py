@@ -57,3 +57,13 @@ def show_login():
         return flask.redirect(flask.url_for('show_index'))
     # Handle GET request.
     return flask.render_template('login.html')
+
+@jasondrive.app.route('/logout/', methods=['GET'])
+def show_logout():
+    """Log user out and redirect to login page."""
+    if 'username' not in flask.session:
+        jasondrive.app.logger.debug('Not logged in! Redirecting...')
+        return flask.redirect(flask.url_for('show_login'))
+    # Otherwise, clear cookie and redirect to login page
+    flask.session.clear()
+    return flask.redirect(flask.url_for('show_login'))
