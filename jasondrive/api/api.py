@@ -10,6 +10,19 @@ import tempfile
 from werkzeug.utils import secure_filename
 
 # TODO: implement API endpoints.
+
+@jasondrive.app.route('/download/', methods=['GET'])
+def handle_download():
+    # If not logged in, deny request.
+    if 'username' not in flask.session:
+        return flask.abort(403)
+    FILEPATH = flask.request.args.get('p', default='', type=str)
+    BASEPATH = jasondrive.app.config["UPLOAD_FOLDER"]
+    PATH = os.path.join(BASEPATH, FILEPATH)
+    if not os.path.exists(PATH):
+        return flask.abort(400)
+    return flask.send_from_directory(BASEPATH, FILEPATH, as_attachment=True)
+
 @jasondrive.app.route('/api/', methods=['GET', 'DELETE', 'PUT'])
 def handle_files():
     # If not logged in, deny request.
