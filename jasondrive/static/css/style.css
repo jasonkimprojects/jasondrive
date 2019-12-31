@@ -70,9 +70,20 @@ a {
   margin-left: 10px;
 }
 
+#uibutton3 {
+  background-color: #BF3100;
+  border: none;
+  color: white;
+  text-align: center;
+  font-size: 14px;
+  border-radius: 12px;
+  padding: 5px 10px;
+  margin-left: 10px;
+}
+
 #newfolder {
   margin-left: 20px;
-  background-color: #628395;
+  background-color: #1F2041;
   border: none;
   color: white;
   text-align: center;

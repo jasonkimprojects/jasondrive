@@ -186,17 +186,23 @@ class App extends React.Component {
       filesnippets.push(
         <div key={key} style={{ align: 'left' }}>
           <div style={{ display: 'inline-block' }}>
-            <p>{key}</p>
+          {
+            this.state.files[key] ? (
+              <p><b>{key + '/'}</b></p>
+            ) : (
+              <p>{key}</p>
+            )
+          }
           </div>
           <div style={{ display: 'inline-block' }}>
             {
               this.state.files[key] ? (
-                <button id="uibutton2" name={key} onClick={this.handleCD}>Open</button>
+                <button id="uibutton3" name={key} onClick={this.handleCD}>Open</button>
               ) : (
                 <button id="uibutton2" name={key} onClick={this.handleDownload}>Download</button>
               )
             }
-            <button id="uibutton2" name={key} onClick={this.handleDelete}>Delete</button>
+            <button id="uibutton2" name={key} onClick={this.handleDelete}>DELETE</button>
             </div>
         </div>
       );
@@ -218,7 +224,7 @@ class App extends React.Component {
             path_to_display === '/' ? (
               <p>(At root directory)</p>
             ) : (
-              <button id="uibutton" onClick={this.handleUpOneLevel}>Up One Level</button>
+              <button id="uibutton3" onClick={this.handleUpOneLevel}>Up One Level</button>
             )
           }
           </div>
