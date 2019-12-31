@@ -49,13 +49,14 @@ def handle_files():
                     jasondrive.app.logger.debug('Directory creation failed')
                     return flask.abort(500)
         # Otherwise, treat as request to upload file.
-        file = flask.request.files['file']
-        if not file.filename:
-            jasondrive.app.logger.debug('No selected file!')
-            return flask.abort(400)
-        if file:
-            # Remember to sanitize the filename first
-            file.save(os.path.join(PATH, secure_filename(file.filename)))
+        else:
+            file = flask.request.files['file']
+            if not file.filename:
+                jasondrive.app.logger.debug('No selected file!')
+                return flask.abort(400)
+            if file:
+                # Remember to sanitize the filename first
+                file.save(os.path.join(PATH, secure_filename(file.filename)))
     elif flask.request.method == 'DELETE':
         try:
             # System calls are different for deleting directories

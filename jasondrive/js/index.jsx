@@ -109,14 +109,12 @@ class App extends React.Component {
     // Need to retrieve user-set directory name
     let dirname = event.target.children[0].value;
     const new_path = this.state.directory + dirname + '/';
-    fetch("/api/" + new_path, { credentials: 'same-origin', method: 'post' })
-      .then( (response) => {
-        if (!response.ok) throw Error(response.statusText);
-        return response.json();
-      })
+    axios.post("/api/" + new_path, { credentials: 'same-origin', method: 'post' })
       .then( (data) => {
+        if (data.statusText !== 'OK') throw Error(data.statusText);
         this.setState({
-          files: data,
+          files: data.data,
+          directory: new_path,
         });
         history.replaceState(this.state, '', '');
       })
@@ -186,16 +184,20 @@ class App extends React.Component {
     // key = filename, value = true if directory, false if file.
     Object.keys(this.state.files).forEach( (key) => {
       filesnippets.push(
-        <div key={key}>
-          <p>{key}</p>
-          {
-            this.state.files[key] ? (
-              <button name={key} onClick={this.handleCD}>Open</button>
-            ) : (
-              <button name={key} onClick={this.handleDownload}>Download</button>
-            )
-          }
-          <button name={key} onClick={this.handleDelete}>Delete</button>
+        <div key={key} style={{ align: 'left' }}>
+          <div style={{ display: 'inline-block' }}>
+            <p>{key}</p>
+          </div>
+          <div style={{ display: 'inline-block' }}>
+            {
+              this.state.files[key] ? (
+                <button id="uibutton2" name={key} onClick={this.handleCD}>Open</button>
+              ) : (
+                <button id="uibutton2" name={key} onClick={this.handleDownload}>Download</button>
+              )
+            }
+            <button id="uibutton2" name={key} onClick={this.handleDelete}>Delete</button>
+            </div>
         </div>
       );
     });
@@ -205,26 +207,38 @@ class App extends React.Component {
     return (
       <div style={{ textAlign: 'center'}}>
         <div style={{ display: 'inline-block' }}>
-          <h3>Current Directory:</h3>
-          <p>{path_to_display}</p>
+          <div style={{ display: 'inline-block' }}>
+            <h3>Current Directory:</h3>
+          </div>
+          <div style={{ display: 'inline-block', marginLeft: '10px' }}>
+            <p>{path_to_display}</p>
+          </div>
+          <div style={{ display: 'inline-block', marginLeft: '20px' }}>
           {
             path_to_display === '/' ? (
-              <p>At root directory</p>
+              <p>(At root directory)</p>
             ) : (
-              <button onClick={this.handleUpOneLevel}>Up One Level</button>
+              <button id="uibutton" onClick={this.handleUpOneLevel}>Up One Level</button>
             )
           }
-          <form action='' method='' onSubmit={this.handleMkdir}>
-            <input type="text" value={this.state.folder_name}
-              onChange={this.handleChange} placeholder="Folder Name" />
-            <input type="submit" value="Create New Folder" />
-          </form>
-          <form action={upload_url} method='post' id="upload"
-            onSubmit={this.handleUpload} encType="multipart/form-data">
-              <input type="file" name="file" />
-              <input type="submit" name="upload" value="Upload File" />
-          </form>
+          </div>
+          <div>
+            <form action='' method='' onSubmit={this.handleMkdir}>
+              <input type="text" value={this.state.folder_name}
+                onChange={this.handleChange} placeholder="Folder Name" />
+              <input id="newfolder" type="submit" value="Create New Folder" />
+            </form>
+          </div>
+          <div style={{ marginTop: '20px' }}>
+            <form action={upload_url} method='post' id="upload"
+              onSubmit={this.handleUpload} encType="multipart/form-data">
+                <input type="file" name="file" />
+                <input id="uibutton" type="submit" name="upload" value="Upload File" />
+            </form>
+          </div>
+          <div style={{ textAlign: 'left', marginTop: '30px' }}>
           {filesnippets}
+          </div>
         </div>
       </div>
     );
