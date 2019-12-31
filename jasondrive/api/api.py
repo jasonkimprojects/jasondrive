@@ -23,16 +23,22 @@ def handle_download():
         return flask.abort(400)
     return flask.send_from_directory(BASEPATH, FILEPATH, as_attachment=True)
 
-@jasondrive.app.route('/api/', methods=['GET', 'DELETE', 'PUT'])
+@jasondrive.app.route('/api/', methods=['GET', 'DELETE', 'POST'])
 def handle_files():
     # If not logged in, deny request.
     if 'username' not in flask.session:
         return flask.abort(403)
     # Args are decoded automatically, yay!
     FILEPATH = flask.request.args.get('p', default='', type=str)
+    # Deny absolute file paths.
+    if FILEPATH and FILEPATH[0] == '/':
+        return flask.abort(403)
+    # Prevent going to parent of uploads folder.
+    if FILEPATH and FILEPATH[0:2] == '..':
+        return flask.abort(403)
     BASEPATH = jasondrive.app.config["UPLOAD_FOLDER"]
     PATH = os.path.join(BASEPATH, FILEPATH)
-    if flask.request.method == 'PUT':
+    if flask.request.method == 'POST':
         if 'file' not in flask.request.files:
             # Treat as request to create a new directory.
             if not os.path.exists(PATH):
@@ -47,7 +53,9 @@ def handle_files():
             jasondrive.app.logger.debug('No selected file!')
             return flask.abort(400)
         if file:
-            file.save(PATH, secure_filename(file.filename))
+            jasondrive.app.logger.debug(PATH)
+            jasondrive.app.logger.debug(secure_filename(file.filename))
+            file.save(os.path.join(PATH, secure_filename(file.filename)))
     elif flask.request.method == 'DELETE':
         try:
             # System calls are different for deleting directories
