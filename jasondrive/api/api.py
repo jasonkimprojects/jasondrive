@@ -53,8 +53,6 @@ def handle_files():
             jasondrive.app.logger.debug('No selected file!')
             return flask.abort(400)
         if file:
-            jasondrive.app.logger.debug(PATH)
-            jasondrive.app.logger.debug(secure_filename(file.filename))
             file.save(os.path.join(PATH, secure_filename(file.filename)))
     elif flask.request.method == 'DELETE':
         try:

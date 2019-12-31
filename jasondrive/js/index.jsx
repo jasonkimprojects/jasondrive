@@ -1,4 +1,5 @@
 import React from 'react';
+import axios from 'axios';
 
 class App extends React.Component {
   constructor(props) {
@@ -70,23 +71,18 @@ class App extends React.Component {
 
   handleUpload(event) {
     event.preventDefault();
-    const form = event.target;
-    const options = {
-      method: 'post',
-      body: form,
-    };
-    fetch("/api/" + this.state.directory, options)
-    .then( (response) => {
-      if (!response.ok) throw Error(response.statusText);
-      return response.json();
-    })
+    const data = new FormData(event.target);
+    axios.post("/api/" + this.state.directory, data, {})
     .then( (data) => {
+      if (data.statusText !== 'OK') throw Error(data.statusText);
+      // In Axios responses are already JS objects!
       this.setState({
-        files: data,
+        files: data.data,
       });
       history.replaceState(this.state, '', '');
     })
     .catch(error => console.log(error));
+
   }
 
   handleDelete(event) {
@@ -163,6 +159,7 @@ class App extends React.Component {
       );
     });
     const path_to_display = this.state.directory.replace("?p=", '/');
+    const upload_url = "/api/" + this.state.directory;
     return (
       <div style={{ textAlign: 'center'}}>
         <div style={{ display: 'inline-block' }}>
@@ -175,10 +172,10 @@ class App extends React.Component {
               <button onClick={this.handleUpOneLevel}>Up One Level</button>
             )
           }
-          <form action='' method='post' onSubmit={this.handleUpload}
-              encType="multipart/form-data">
+          <form action={upload_url} method='post' id="upload"
+            onSubmit={this.handleUpload} encType="multipart/form-data">
               <input type="file" name="file" />
-              <input type="submit" name="submit" value="Upload File" />
+              <input type="submit" name="upload" value="Upload File" />
           </form>
           {filesnippets}
         </div>
