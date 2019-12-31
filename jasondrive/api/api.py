@@ -34,13 +34,14 @@ def handle_files():
     if FILEPATH and FILEPATH[0] == '/':
         return flask.abort(403)
     # Prevent going to parent of uploads folder.
-    if FILEPATH and FILEPATH[0:2] == '..':
+    if FILEPATH and '..' in FILEPATH:
         return flask.abort(403)
     BASEPATH = jasondrive.app.config["UPLOAD_FOLDER"]
     PATH = os.path.join(BASEPATH, FILEPATH)
     if flask.request.method == 'POST':
         if 'file' not in flask.request.files:
             # Treat as request to create a new directory.
+            # Prevent going to parent of uploads folder.
             if not os.path.exists(PATH):
                 try:
                     os.makedirs(PATH)

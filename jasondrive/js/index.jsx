@@ -7,14 +7,23 @@ class App extends React.Component {
     this.state = {
       files: {},
       directory: '?p=',
+      folder_name: '',
     };
     // Binding handlers for changing directory, upload, and delete.
-    // Also download!
+    // Also download, up one level, and creating directory.
     this.handleCD = this.handleCD.bind(this);
     this.handleUpload = this.handleUpload.bind(this);
     this.handleDelete = this.handleDelete.bind(this);
     this.handleDownload = this.handleDownload.bind(this);
     this.handleUpOneLevel = this.handleUpOneLevel.bind(this);
+    this.handleMkdir = this.handleMkdir.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+  }
+
+  handleChange(event) {
+    this.setState({
+      folder_name: event.target.value,
+    });
   }
 
   handleCD(event) {
@@ -83,6 +92,24 @@ class App extends React.Component {
     })
     .catch(error => console.log(error));
 
+  }
+
+  handleMkdir(event) {
+    // Need to retrieve user-set directory name
+    let dirname = event.target.children[0].value;
+    const new_path = this.state.directory + dirname + '/';
+    fetch("/api/" + new_path, { credentials: 'same-origin', method: 'post' })
+      .then( (response) => {
+        if (!response.ok) throw Error(response.statusText);
+        return response.json();
+      })
+      .then( (data) => {
+        this.setState({
+          files: data,
+        });
+        history.replaceState(this.state, '', '');
+      })
+      .catch(error => console.log(error));
   }
 
   handleDelete(event) {
@@ -172,6 +199,11 @@ class App extends React.Component {
               <button onClick={this.handleUpOneLevel}>Up One Level</button>
             )
           }
+          <form action='' method='' onSubmit={this.handleMkdir}>
+            <input type="text" value={this.state.folder_name}
+              onChange={this.handleChange} placeholder="Folder Name" />
+            <input type="submit" value="Create New Folder" />
+          </form>
           <form action={upload_url} method='post' id="upload"
             onSubmit={this.handleUpload} encType="multipart/form-data">
               <input type="file" name="file" />
