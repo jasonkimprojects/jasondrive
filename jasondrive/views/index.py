@@ -1,15 +1,11 @@
 """
 jasondrive index.html view.
 """
-import shutil
-import tempfile
 import hashlib
 import os
-import uuid
 import flask
 import jasondrive
 
-# TODO implement index server-side functions
 
 @jasondrive.app.route('/', methods=['GET'])
 def show_index():
@@ -57,6 +53,7 @@ def show_login():
         return flask.redirect(flask.url_for('show_index'))
     # Handle GET request.
     return flask.render_template('login.html')
+
 
 @jasondrive.app.route('/logout/', methods=['GET'])
 def show_logout():

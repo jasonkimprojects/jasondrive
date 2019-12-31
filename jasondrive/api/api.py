@@ -9,7 +9,6 @@ import tempfile
 
 from werkzeug.utils import secure_filename
 
-# TODO: implement API endpoints.
 
 @jasondrive.app.route('/download/', methods=['GET'])
 def handle_download():
@@ -21,7 +20,9 @@ def handle_download():
     PATH = os.path.join(BASEPATH, FILEPATH)
     if not os.path.exists(PATH):
         return flask.abort(400)
+    # as_attachment conserves the filename!
     return flask.send_from_directory(BASEPATH, FILEPATH, as_attachment=True)
+
 
 @jasondrive.app.route('/api/', methods=['GET', 'DELETE', 'POST'])
 def handle_files():
@@ -41,7 +42,6 @@ def handle_files():
     if flask.request.method == 'POST':
         if 'file' not in flask.request.files:
             # Treat as request to create a new directory.
-            # Prevent going to parent of uploads folder.
             if not os.path.exists(PATH):
                 try:
                     os.makedirs(PATH)
@@ -54,6 +54,7 @@ def handle_files():
             jasondrive.app.logger.debug('No selected file!')
             return flask.abort(400)
         if file:
+            # Remember to sanitize the filename first
             file.save(os.path.join(PATH, secure_filename(file.filename)))
     elif flask.request.method == 'DELETE':
         try:
@@ -70,7 +71,7 @@ def handle_files():
             jasondrive.app.logger.debug(str(e))
             return flask.abort(400)
     # Handle GET method - returns files in path.
-    # Also used to return current files after PUT or DELETE operation.
+    # Also used to return current files after POST or DELETE operation.
     context = {}
     # Dictionary: keys are filenames or directory names.
     try:

@@ -1,9 +1,11 @@
 import React from 'react';
 import axios from 'axios';
+// axios needed for promise-based XHRs
 
 class App extends React.Component {
   constructor(props) {
     super(props);
+    // folder_name stores the input field of creating a new folder
     this.state = {
       files: {},
       directory: '?p=',
@@ -21,12 +23,15 @@ class App extends React.Component {
   }
 
   handleChange(event) {
+    // Event handler for changing value of folder name input field.
+    event.preventDefault();
     this.setState({
       folder_name: event.target.value,
     });
   }
 
   handleCD(event) {
+    // Event handler for moving into a directory.
     event.preventDefault();
     const new_path = this.state.directory +
       event.target.getAttribute('name') + '/';
@@ -44,10 +49,11 @@ class App extends React.Component {
         history.replaceState(this.state, '', '');
       })
       .catch(error => console.log(error));
-    // TODO
   }
 
   handleUpOneLevel(event) {
+    // Event handler for moving to parent directory.
+    event.preventDefault();
     const url_parts = this.state.directory.split('/');
     let new_url = '';
     // Root storage directory, or one subfolder below.
@@ -79,8 +85,11 @@ class App extends React.Component {
   }
 
   handleUpload(event) {
+    // Event handler for uploading a new file.
     event.preventDefault();
+    // Cast needed to FormData object.
     const data = new FormData(event.target);
+    // Using axios instead of fetch for form submission.
     axios.post("/api/" + this.state.directory, data, {})
     .then( (data) => {
       if (data.statusText !== 'OK') throw Error(data.statusText);
@@ -95,6 +104,8 @@ class App extends React.Component {
   }
 
   handleMkdir(event) {
+    // Event handler for creating a new directory.
+    event.preventDefault();
     // Need to retrieve user-set directory name
     let dirname = event.target.children[0].value;
     const new_path = this.state.directory + dirname + '/';
@@ -113,6 +124,7 @@ class App extends React.Component {
   }
 
   handleDelete(event) {
+    // Event handler for deleting a file or directory.
     event.preventDefault();
     const target = event.target.getAttribute('name');
     const delete_url = "/api/" + this.state.directory + target;
@@ -135,6 +147,7 @@ class App extends React.Component {
   }
 
   handleDownload(event) {
+    // Event handler for downloading a file.
     event.preventDefault();
     const download_url = "/download/" + this.state.directory +
       event.target.getAttribute('name');
@@ -151,6 +164,7 @@ class App extends React.Component {
             return;
           }
         }
+    // Obtain list of files and directories in current directory.
     fetch("/api/" + this.state.directory, { credentials: 'same-origin'})
       .then( (response) => {
         if (!response.ok) throw Error(response.statusText);
@@ -185,6 +199,7 @@ class App extends React.Component {
         </div>
       );
     });
+    // Don't display the query to the user
     const path_to_display = this.state.directory.replace("?p=", '/');
     const upload_url = "/api/" + this.state.directory;
     return (
