@@ -10,7 +10,7 @@ setup(
     packages=['jasondrive'],
     include_package_data=True,
     install_requires=[
-        'Flask==1.1.1',
+        'Flask==2.3.2',
         ],
     )
 
